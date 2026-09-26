@@ -59,5 +59,7 @@ described upstream in `INSTALL.md`, step 2 (new realm) or 2a (existing realm).
 
 Fork this repository, then change `deploy/site.env` (`PRESSERL_HOSTNAME`, `PRESSERL_OIDC_ISSUER`,
 `PRESSERL_ROUTER`, `PRESSERL_DB_DIR`, name), replace the hostname in `keycloak/presserl-realm.json`,
-set the GitHub secrets above and create `secrets.env` on the target server. Ask upstream to add the
+set the GitHub secrets above and create `secrets.env` on the target server. `up.sh` refuses to
+start when `PRESSERL_ROUTER` or `PRESSERL_DB_DIR` already belong to a deployment in another
+directory, so a fork pushed before its `site.env` is adapted cannot take over this site. Ask upstream to add the
 fork to the dispatch, or deploy it manually.
