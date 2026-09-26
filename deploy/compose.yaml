@@ -1,6 +1,7 @@
 # Staging deployment of Presserl, derived from upstream deploy/compose.yaml plus Traefik labels.
 # Started by up.sh, which loads .env (version, written by the deploy workflow), site.env and secrets.env.
-name: presserl
+# Project name per site, so several deployments can share a host
+name: ${PRESSERL_ROUTER}
 
 services:
   presserl:
