@@ -1,0 +1,63 @@
+# presserl-deployment
+
+Deployment of [Presserl](https://github.com/UnterrainerInformatik/presserl) at
+`presserl.unterrainer.info` (staging). It holds only what is specific to this site: `deploy/site.env`
+(hostname, Keycloak realm, name), the compose file with Traefik labels and the realm file. The
+application comes as the upstream image `gufalcon/presserl`; the full installation guide is
+upstream in [`deploy/INSTALL.md`](https://github.com/UnterrainerInformatik/presserl/blob/master/deploy/INSTALL.md).
+
+## How it deploys
+
+The upstream pipeline builds the image and sends a `repository_dispatch` (`presserl-image`, with the
+version) to this repository. `.github/workflows/deploy.yml` then runs the UnterrainerInformatik
+`deploy-workflow`: it copies `deploy/` to `DEPLOY_DIR` on the server (via WireGuard and SSH), writes
+`.env` with the version and runs `up.sh`. A manual run (*Actions → DEPLOY → Run workflow*) deploys a
+given version or, if left empty, the latest upstream release tag; a push to this repository
+redeploys the latest release too.
+
+`up.sh` loads `.env`, `site.env` and `secrets.env` and starts `presserl` and `postgres` with docker
+compose. `presserl` joins the Traefik network `proxy_default`; the database stays on the private
+compose network with its data in `PRESSERL_DB_DIR`.
+
+## GitHub secrets (this repository)
+
+| Secret | Value |
+|---|---|
+| `DEPLOY_SSH_PRIVATE_KEY` | private SSH key whose public key is in the deploy user's `~/.ssh/authorized_keys` on the server |
+| `DEPLOY_SSH_USER` | deploy user on the server |
+| `DEPLOY_SERVER` | server host name or IP as reachable through WireGuard |
+| `DEPLOY_SSH_PORT` | usually `22` |
+| `DEPLOY_DIR` | e.g. `/app/deploy/presserl` |
+| `DATA_DIR` | e.g. `/app/data/presserl` (parent of `PRESSERL_DB_DIR`) |
+| `DOCKER_HUB_USER` | `gufalcon` |
+| `DOCKER_IMAGE_NAME` | `presserl` |
+| `WG_CONFIG` | WireGuard client configuration for the runner |
+
+Upstream needs `DEPLOYMENT_DISPATCH_TOKEN`: a fine-grained personal access token limited to this
+repository with *Contents: Read and write* (required for `repository_dispatch`).
+
+## Server secrets (`secrets.env`, once per server)
+
+Never committed; the deploy workflow does not touch it. Create it in `DEPLOY_DIR`:
+
+```sh
+cat > secrets.env <<'EOF'
+PRESSERL_DB_PASSWORD=<long random string>
+PRESSERL_OIDC_BACKEND_SECRET=<Keycloak: Clients > presserl-backend > Credentials>
+PRESSERL_PUBLISHER_USERNAME=<first publisher>
+PRESSERL_PUBLISHER_PASSWORD=<their initial password>
+EOF
+chmod 600 secrets.env
+```
+
+## Keycloak
+
+Import `keycloak/presserl-realm.json` (hostname already set to `presserl.unterrainer.info`) as
+described upstream in `INSTALL.md`, step 2 (new realm) or 2a (existing realm).
+
+## Forking for another newspaper
+
+Fork this repository, then change `deploy/site.env` (`PRESSERL_HOSTNAME`, `PRESSERL_OIDC_ISSUER`,
+`PRESSERL_ROUTER`, `PRESSERL_DB_DIR`, name), replace the hostname in `keycloak/presserl-realm.json`,
+set the GitHub secrets above and create `secrets.env` on the target server. Ask upstream to add the
+fork to the dispatch, or deploy it manually.

@@ -1,0 +1,58 @@
+# Staging deployment of Presserl, derived from upstream deploy/compose.yaml plus Traefik labels.
+# Started by up.sh, which loads .env (version, written by the deploy workflow), site.env and secrets.env.
+name: presserl
+
+services:
+  presserl:
+    image: ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:${VERSION}
+    restart: unless-stopped
+    environment:
+      PRESSERL_DB_HOST: postgres
+      PRESSERL_DB_PASSWORD: ${PRESSERL_DB_PASSWORD:?missing in secrets.env}
+      PRESSERL_OIDC_ISSUER: ${PRESSERL_OIDC_ISSUER}
+      PRESSERL_OIDC_ADMIN_CLIENT_ID: ${PRESSERL_OIDC_ADMIN_CLIENT_ID}
+      PRESSERL_OIDC_BACKEND_SECRET: ${PRESSERL_OIDC_BACKEND_SECRET:?missing in secrets.env}
+      PRESSERL_PUBLISHER_USERNAME: ${PRESSERL_PUBLISHER_USERNAME:?missing in secrets.env}
+      PRESSERL_PUBLISHER_PASSWORD: ${PRESSERL_PUBLISHER_PASSWORD:?missing in secrets.env}
+      PRESSERL_NEWSPAPER_NAME: ${PRESSERL_NEWSPAPER_NAME:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://localhost:8080/q/health/ready"]
+      interval: 15s
+      timeout: 5s
+      start_period: 60s
+      retries: 5
+    networks:
+      - default
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=proxy_default
+      - traefik.http.routers.${PRESSERL_ROUTER}.rule=Host(`${PRESSERL_HOSTNAME}`)
+      # Headers, HTTPS redirect and TLS come from the entrypoints
+      - traefik.http.routers.${PRESSERL_ROUTER}.entrypoints=${PRESSERL_ENTRYPOINTS}
+      - traefik.http.services.${PRESSERL_ROUTER}.loadbalancer.server.port=8080
+
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: presserl
+      POSTGRES_USER: presserl
+      POSTGRES_PASSWORD: ${PRESSERL_DB_PASSWORD:?missing in secrets.env}
+    volumes:
+      - ${PRESSERL_DB_DIR}:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U presserl -d presserl"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    labels:
+      - traefik.enable=false
+
+networks:
+  proxy:
+    name: proxy_default
+    external: true
