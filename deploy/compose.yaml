@@ -31,7 +31,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=proxy_default
-      - traefik.http.routers.${PRESSERL_ROUTER}.rule=Host(`${PRESSERL_HOSTNAME}`)
+      - traefik.http.routers.${PRESSERL_ROUTER}.rule=${PRESSERL_ROUTER_RULE:-Host(`${PRESSERL_HOSTNAME}`)}
       # Headers, HTTPS redirect and TLS come from the entrypoints
       - traefik.http.routers.${PRESSERL_ROUTER}.entrypoints=${PRESSERL_ENTRYPOINTS}
       - traefik.http.services.${PRESSERL_ROUTER}.loadbalancer.server.port=8080
