@@ -44,6 +44,7 @@ Never committed; the deploy workflow does not touch it. Create it in `DEPLOY_DIR
 cat > secrets.env <<'EOF'
 PRESSERL_DB_PASSWORD=<long random string>
 PRESSERL_OIDC_BACKEND_SECRET=<Keycloak: Clients > presserl-backend > Credentials>
+PRESSERL_OIDC_READER_SECRET=<Keycloak: Clients > presserl-reader > Credentials>
 PRESSERL_PUBLISHER_USERNAME=<first publisher>
 PRESSERL_PUBLISHER_PASSWORD=<their initial password>
 EOF
@@ -54,6 +55,11 @@ chmod 600 secrets.env
 
 Import `keycloak/presserl-realm.json` (hostname already set to `presserl.unterrainer.info`) as
 described upstream in `INSTALL.md`, step 2 (new realm) or 2a (existing realm).
+
+A realm imported before the reader login lacks the client `presserl-reader`. Add it with a partial
+import of the same file (*Clients* only, *If a resource exists: Skip*), then copy its secret into
+`PRESSERL_OIDC_READER_SECRET` in `secrets.env` — before the next deploy, otherwise compose stops
+with "missing in secrets.env".
 
 ## Forking for another newspaper
 
