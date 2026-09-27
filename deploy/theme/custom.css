@@ -1,0 +1,63 @@
+/*
+ * Your newspaper's theme. This file is loaded on every reader page AFTER the built-in default
+ * theme, so everything you write here wins. It changes nothing as long as it only holds comments.
+ * Save the file and reload the page — no restart needed. Examples to copy: examples/*.css.
+ *
+ * ---------------------------------------------------------------------------------------------
+ * 1. Tokens (CSS custom properties). Changing a token changes every place that uses it.
+ * ---------------------------------------------------------------------------------------------
+ *
+ * :root {
+ *   --presserl-font-body: "Atkinson Hyperlegible", "Verdana", sans-serif;
+ *   --presserl-font-headline: "Playfair Display", "Georgia", serif;
+ *
+ *   --presserl-color-paper: #fbf8f1;    background
+ *   --presserl-color-ink: #1d1b18;      text
+ *   --presserl-color-muted: #5b5650;    bylines, dates, notes
+ *   --presserl-color-accent: #a8321d;   links, kickers, quote rule
+ *   --presserl-color-rule: #d9d2c3;     thin lines between stories
+ *
+ *   --presserl-text-size: 19px;         body text; the reader's size switch sets 17/19/22/26 px
+ *   --presserl-letter-spacing: 0.02em;
+ *   --presserl-measure: 65ch;           longest reading line
+ *   --presserl-grid-columns: 12;        front-page columns on wide screens (6 on tablets, 1 on phones)
+ *
+ *   --presserl-section-red: #c62828;    section colours, one per palette key:
+ *   --presserl-section-orange: …;       red, orange, yellow, green, teal, blue, purple, pink
+ * }
+ *
+ * Keep text readable: ink and muted need a contrast of at least 4.5:1 against the paper.
+ *
+ * Dark mode follows the operating system. The default theme sets its dark colours in
+ *   @media (prefers-color-scheme: dark) { :root { … } }
+ * If you change colours, change the dark ones in such a block too (see examples/classic.css).
+ *
+ * Other body fonts: "Andika" ships with Presserl (made for beginning readers). Your own fonts go
+ * into theme/fonts/ and are loaded with
+ *   @font-face { font-family: "My Font"; src: url("fonts/my-font.woff2") format("woff2"); }
+ * Images (logo, backgrounds) go into theme/ as well and are referenced relative to this file.
+ * Allowed file types: css, woff2, woff, ttf, otf, png, jpg, jpeg, gif, webp, svg, ico.
+ *
+ * ---------------------------------------------------------------------------------------------
+ * 2. Views: <main data-view="…"> tells which page is shown.
+ * ---------------------------------------------------------------------------------------------
+ *
+ *   frontpage | article | not-found
+ *
+ *   Example: [data-view="frontpage"] .masthead { text-align: left; }
+ *
+ * ---------------------------------------------------------------------------------------------
+ * 3. Classes that stay stable across Presserl versions
+ * ---------------------------------------------------------------------------------------------
+ *
+ *   .masthead  .masthead__name  .masthead__subtitle   newspaper name at the top
+ *   .text-size-switch                                  the S / M / L / XL buttons
+ *   .section-bar                                       list of sections below the masthead
+ *   .section-tag  [data-section-color="blue"]          a section name with its colour marker
+ *   .lead-article  .article-card                       front-page stories (lead / others)
+ *   .kicker  .headline  .subheadline  .lead  .byline  parts of a story or article
+ *   .article  .article__body                           the article page and its text
+ *   .note                                              hints such as "No articles published yet."
+ *
+ * Other class names and tokens starting with --presserl-_ are internal and may change.
+ */

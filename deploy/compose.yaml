@@ -17,6 +17,9 @@ services:
       PRESSERL_PUBLISHER_USERNAME: ${PRESSERL_PUBLISHER_USERNAME:?missing in secrets.env}
       PRESSERL_PUBLISHER_PASSWORD: ${PRESSERL_PUBLISHER_PASSWORD:?missing in secrets.env}
       PRESSERL_NEWSPAPER_NAME: ${PRESSERL_NEWSPAPER_NAME:-}
+    volumes:
+      # The newspaper's theme (custom.css, fonts, images), served at /theme/; examples upstream in deploy/theme/
+      - ./theme:/deployments/theme:ro
     depends_on:
       postgres:
         condition: service_healthy
