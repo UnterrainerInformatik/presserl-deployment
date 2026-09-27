@@ -15,9 +15,11 @@ version) to this repository. `.github/workflows/deploy.yml` then runs the Unterr
 given version or, if left empty, the latest upstream release tag; a push to this repository
 redeploys the latest release too.
 
-`up.sh` loads `.env`, `site.env` and `secrets.env` and starts `presserl` and `postgres` with docker
-compose. `presserl` joins the Traefik network `proxy_default`; the database stays on the private
-compose network with its data in `PRESSERL_DB_DIR`.
+`up.sh` loads `.env`, `site.env` and `secrets.env` and starts `presserl`, `postgres` and `rustfs`
+with docker compose. `presserl` joins the Traefik network `proxy_default`; the database and the
+media store stay on the private compose network. The database keeps its data in `PRESSERL_DB_DIR`,
+the uploaded images live in the named volume `<PRESSERL_ROUTER>_presserl-media` (e.g.
+`presserl_presserl-media`) — back up both.
 
 ## GitHub secrets (this repository)
 
@@ -47,9 +49,15 @@ PRESSERL_OIDC_BACKEND_SECRET=<Keycloak: Clients > presserl-backend > Credentials
 PRESSERL_OIDC_READER_SECRET=<Keycloak: Clients > presserl-reader > Credentials>
 PRESSERL_PUBLISHER_USERNAME=<first publisher>
 PRESSERL_PUBLISHER_PASSWORD=<their initial password>
+PRESSERL_MEDIA_S3_ACCESS_KEY=<random, e.g. openssl rand -hex 10>
+PRESSERL_MEDIA_S3_SECRET_KEY=<random, e.g. openssl rand -hex 20>
 EOF
 chmod 600 secrets.env
 ```
+
+The two `PRESSERL_MEDIA_S3_*` values are new with image uploads: add them to an existing
+`secrets.env` before the first deploy of a version with uploads, otherwise compose stops with
+"missing in secrets.env".
 
 ## Keycloak
 
