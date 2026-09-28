@@ -1,7 +1,9 @@
 # presserl-deployment
 
 Deployment of [Presserl](https://github.com/UnterrainerInformatik/presserl) at
-`presserl.unterrainer.info` (staging). It holds only what is specific to this site: `deploy/site.env`
+`presserl.unterrainer.info` — the **staging site**, reachable from LAN/VPN only. Its first public fork
+is [`guFalcon/alexpresse`](https://github.com/guFalcon/alexpresse) (*Alex-Presse*, `alexpresse.net`),
+see [Staging and forks](#staging-and-forks). It holds only what is specific to this site: `deploy/site.env`
 (hostname, Keycloak realm, name), the compose file with Traefik labels and the realm file. The
 application comes as the upstream image `gufalcon/presserl`; the full installation guide is
 upstream in [`deploy/INSTALL.md`](https://github.com/UnterrainerInformatik/presserl/blob/master/deploy/INSTALL.md).
@@ -75,5 +77,15 @@ Fork this repository, then change `deploy/site.env` (`PRESSERL_HOSTNAME`, `PRESS
 `PRESSERL_ROUTER`, `PRESSERL_DB_DIR`, name), replace the hostname in `keycloak/presserl-realm.json`,
 set the GitHub secrets above and create `secrets.env` on the target server. `up.sh` refuses to
 start when `PRESSERL_ROUTER` or `PRESSERL_DB_DIR` already belong to a deployment in another
-directory, so a fork pushed before its `site.env` is adapted cannot take over this site. Ask upstream to add the
-fork to the dispatch, or deploy it manually.
+directory, so a fork pushed before its `site.env` is adapted cannot take over this site.
+
+## Staging and forks
+
+Only this repository receives the upstream dispatch, so staging runs every new image first. A fork
+such as `alexpresse` is not dispatched; a release reaches it by promotion:
+
+1. The release runs here on staging and looks fine.
+2. In the fork: `git pull upstream master` (remote `upstream` = this repository; on a conflict in
+   `deploy/theme/custom.css` keep the fork's own theme).
+3. Push the fork. The push redeploys the latest upstream release tag; a manual run
+   (*Actions → DEPLOY → Run workflow*) deploys a given version.

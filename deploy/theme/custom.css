@@ -42,7 +42,10 @@
  * 2. Views: <main data-view="…"> tells which page is shown.
  * ---------------------------------------------------------------------------------------------
  *
- *   frontpage | article | not-found
+ *   frontpage | article | not-found | issue | issues | print-article | print-issue
+ *
+ *   The print views are printed on paper: dark mode and fork colours never reach them. Steer
+ *   print through [data-view="print-…"] and --presserl-grid-columns.
  *
  *   Example: [data-view="frontpage"] .masthead { text-align: left; }
  *
@@ -51,12 +54,18 @@
  * ---------------------------------------------------------------------------------------------
  *
  *   .masthead  .masthead__name  .masthead__subtitle   newspaper name at the top
+ *   .masthead__tools  .masthead__viewer                top row: logged-in reader and size switch
+ *   .masthead__issue                                   issue number, date and archive link
  *   .text-size-switch                                  the S / M / L / XL buttons
  *   .section-bar                                       list of sections below the masthead
  *   .section-tag  [data-section-color="blue"]          a section name with its colour marker
- *   .lead-article  .article-card                       front-page stories (lead / others)
+ *   .stories                                           the list of stories on the front and issue page
+ *   .lead-article  .article-card                       stories in that list (lead / others)
  *   .kicker  .headline  .subheadline  .lead  .byline  parts of a story or article
  *   .article  .article__body                           the article page and its text
+ *   .lead-image  .lead-image__caption                  a story's lead image (figure) and its caption
+ *   .issue-list  .issue-list__item                     the issue archive and one issue in it
+ *   .issue-list__label  .issue-list__headline          an issue's number link and its first headline
  *   .note                                              hints such as "No articles published yet."
  *
  * Other class names and tokens starting with --presserl-_ are internal and may change.
