@@ -20,6 +20,7 @@ services:
       PRESSERL_MEDIA_S3_ENDPOINT: http://rustfs:9000
       PRESSERL_MEDIA_S3_ACCESS_KEY: ${PRESSERL_MEDIA_S3_ACCESS_KEY:?missing in secrets.env}
       PRESSERL_MEDIA_S3_SECRET_KEY: ${PRESSERL_MEDIA_S3_SECRET_KEY:?missing in secrets.env}
+      PRESSERL_SPELL_CHECK_LANGUAGE: ${PRESSERL_SPELL_CHECK_LANGUAGE:-de-DE}
     volumes:
       # The newspaper's theme (custom.css, fonts, images), served at /theme/; examples upstream in deploy/theme/
       - ./theme:/deployments/theme:ro
@@ -78,6 +79,23 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    labels:
+      - traefik.enable=false
+
+  # German spell check of the admin app; no published port, only presserl reaches it.
+  # presserl does not wait for it: until it is up, spell checks answer 503.
+  languagetool:
+    image: erikvl87/languagetool:6.8
+    restart: unless-stopped
+    environment:
+      Java_Xms: 256m
+      Java_Xmx: 768m
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://localhost:8010/v2/languages"]
+      interval: 10s
+      timeout: 5s
+      start_period: 60s
+      retries: 5
     labels:
       - traefik.enable=false
 

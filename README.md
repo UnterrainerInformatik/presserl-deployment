@@ -17,9 +17,9 @@ version) to this repository. `.github/workflows/deploy.yml` then runs the Unterr
 given version or, if left empty, the latest upstream release tag; a push to this repository
 redeploys the latest release too.
 
-`up.sh` loads `.env`, `site.env` and `secrets.env` and starts `presserl`, `postgres` and `rustfs`
-with docker compose. `presserl` joins the Traefik network `proxy_default`; the database and the
-media store stay on the private compose network. The database keeps its data in `PRESSERL_DB_DIR`,
+`up.sh` loads `.env`, `site.env` and `secrets.env` and starts `presserl`, `postgres`, `rustfs`
+and `languagetool` with docker compose. `presserl` joins the Traefik network `proxy_default`; the
+database, the media store and the spell checker stay on the private compose network. The database keeps its data in `PRESSERL_DB_DIR`,
 the uploaded images live in the named volume `<PRESSERL_ROUTER>_presserl-media` (e.g.
 `presserl_presserl-media`) — back up both.
 
