@@ -1,7 +1,7 @@
 # presserl-deployment
 
 Deployment of [Presserl](https://github.com/UnterrainerInformatik/presserl) at
-`presserl.unterrainer.info` — the **staging site**, reachable from LAN/VPN only. Its first public fork
+`presserl.unterrainer.info` — the **staging site**, reachable from the internet (Google Play reviewers use it). Its first public fork
 is [`guFalcon/alexpresse`](https://github.com/guFalcon/alexpresse) (*Alex-Presse*, `alexpresse.net`),
 see [Staging and forks](#staging-and-forks). It holds only what is specific to this site: `deploy/site.env`
 (hostname, Keycloak realm, name), the compose file with Traefik labels and the realm file. The
